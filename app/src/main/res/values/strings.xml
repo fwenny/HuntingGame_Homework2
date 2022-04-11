@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name" translatable="false">Class22B-And-1</string>
-    <string name="show">Show</string>
-    <string name="click_me">Click Me</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <string name="app_name">Hunting game</string>
+    <string name="btn_start">Start!</string>
+    <string name="tv_num_of_rows">Number of rows:</string>
+    <string name="tv_num_of_cols">Number of columns:</string>
+    <string name="tv_go">Hunt the dino!</string>
+    <string name="toast_you_win">You win!</string>
 </resources>

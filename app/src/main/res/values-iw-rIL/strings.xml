@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Class22B-And-1</string>
-    <string name="show">הצג</string>
-    <string name="click_me">לחץ עליי</string>
-    <string name="yes">כן</string>
-    <string name="no">לא</string>
+    <string name="btn_start">התחל!</string>
+    <string name="tv_num_of_rows">מספר שורות:</string>
+    <string name="app_name">משחק הצייד</string>
+    <string name="tv_num_of_cols">מספר עמודות:</string>
+    <string name="tv_go">תצוד את הדינו!</string>
+    <string name="toast_you_win">ניצחת!</string>
 </resources>

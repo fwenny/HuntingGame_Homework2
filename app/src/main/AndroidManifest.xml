@@ -10,10 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Class22BAnd1">
         <activity
-            android:name=".Activity_Life"
-            android:exported="false" />
-        <activity
             android:name=".Activity_Game"
+            android:label="hunting game"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,13 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activity_Menu"
-            android:exported="true"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name=".Activity_Main"
-            android:exported="true" />
     </application>
 
 </manifest>

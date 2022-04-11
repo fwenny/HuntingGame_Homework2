@@ -3,6 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2795" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable/btn_circular.xml" value="0.33" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable/btn_circular_active.xml" value="0.397" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable/empty.xml" value="0.397" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable/ic_heart.xml" value="0.2795" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2795" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/drawable/iv_shape.xml" value="0.2795" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/layout-land/activity_game.xml" value="0.27733686067019403" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/layout/activity_game.xml" value="0.67" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/layout/activity_life.xml" value="0.32760416666666664" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/layout/activity_main.xml" value="0.32760416666666664" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/layout/game_main_menu.xml" value="0.22" />
+        <entry key="..\:/Users/xande/AndroidStudioProjects/FromTeacher/app/src/main/res/layout/testing_layout.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_broccoli.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_heart.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/image2vector.xml" value="0.1135" />

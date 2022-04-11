@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity_Game"
     android:keepScreenOn="true">
 
-
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <TextView
+        android:id="@+id/game_tv_dinoHp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:text="Dino HP"
+        android:layout_marginStart="16dp"
+        android:textSize="30sp"
+        />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/game_llc_lives"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/game_tv_dinoHp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -37,66 +47,101 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
+    <TextView
+        android:id="@+id/game_tv_timerPassed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:textSize="30sp"
+        android:text="Time" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/game_LBL_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:text="000"
+        android:layout_below="@+id/game_tv_timerPassed"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="-10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="0"
         android:textColor="#000000"
         android:textSize="50sp"
         android:textStyle="bold" />
 
-    <ImageView
-        android:id="@+id/game_IMG_flag"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_heart" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/game_LBL_country"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/game_IMG_flag"
-        android:layout_centerHorizontal="true"
-        android:text="- COUNTRY_NAME - "
-        android:textColor="#000000"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
+        android:id="@+id/game_LL_mainMatrix"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/game_LBL_score"
+
+        />
+
+<!--    <include-->
+<!--        layout="@layout/testing_layout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/game_IMG_heart1"-->
+<!--        android:layout_marginTop="90dp" />-->
+
+    <Button
+        android:id="@+id/game_btn_left"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_toLeftOf="@id/game_btn_down"
+        android:layout_above="@id/game_btn_down"
+        android:background="@drawable/btn_circular"
+        app:backgroundTint="@null"
+        android:textSize="40sp"
+        android:text="•"
+        android:textScaleX="0"
+        />
+
+    <Button
+        android:id="@+id/game_btn_right"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_above="@id/game_btn_down"
+        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@id/game_btn_down"
+        android:background="@drawable/btn_circular"
+        app:backgroundTint="@null"
+        android:textSize="40sp"
+        android:text="•"
+        android:textScaleX="0"/>
+
+    <Button
+        android:id="@+id/game_btn_up"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_above="@id/game_btn_down"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/btn_circular"
+        app:backgroundTint="@null"
+        android:textSize="40sp"
+        android:text="•"
+        android:textScaleX="0"/>
+    <Button
+        android:id="@+id/game_btn_down"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:orientation="horizontal">
+        android:background="@drawable/btn_circular"
+        android:layout_centerHorizontal="true"
+        app:backgroundTint="@null"
+        android:textSize="40sp"
+        android:text="•"
+        android:textScaleX="0"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/game_BTN_yes"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            android:layout_weight="1"
-            android:text="@string/yes"
-            android:textSize="28dp"
-            app:cornerRadius="50dp"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="3dp"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/game_BTN_no"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            android:layout_weight="1"
-            android:text="@string/no"
-            android:textSize="28dp"
-            app:cornerRadius="50dp" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    <TextView
+        android:id="@+id/game_tv_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textAlignment="center"
+        android:textSize="50sp" />
 
 </RelativeLayout>
