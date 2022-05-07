@@ -1,260 +1,274 @@
 package com.guy.class22b_and_1;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Point;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.textview.MaterialTextView;
 
-import java.util.Random;
+import java.util.Calendar;
+import java.util.Dictionary;
 
 public class Activity_Game extends AppCompatActivity {
 
-    private Point charLocation;
-    private Point enemyLocation;
-    private Point moveDir;
-
-    private Random rand = new Random(123456);
-    private Handler handler = new Handler();
-    private int delay = 1000;
+    // helper properties
     private int timeUntilStart = 4;
-    private int rows = 10;
-    private int cols = 10;
 
+    // helper classes
     private GameManager gameManager;
+    private GameBoard gameBoard;
+    private SensorsManager sensorsManger;
+
+    private SharedPreferences prefs;
+    private Dictionary<String, String> records;
 
     // UI elements
     private LinearLayout game_LL_mainMatrix;
     private ImageView[] game_IMG_hearts;
-    private EditText game_et_rows;
-    private EditText game_et_cols;
     private Button game_btn_submit;
+    private Button game_btn_records;
+    private Button game_btn_submit_sensors;
     private Button game_btn_left;
     private Button game_btn_right;
     private Button game_btn_up;
     private Button game_btn_down;
     private TextView game_tv_timer;
     private MaterialTextView game_LBL_score;
+    private Button game_btn_exit;
+    private TextView game_tv_records;
+    private TextView game_tv_records_label;
+    private Button game_btn_back;
+    private TextView game_tv_title;
+
+    // main activity instance
+    public static Activity_Game instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // save instance for later use
+        instance = this;
+
+        prefs = this.getSharedPreferences("com.my.app", Context.MODE_PRIVATE);
+
+        gameManager = new GameManager();
+
+        if (!gameManager.getSound(SOUNDS.MAIN_MENU).isPlaying())
+            gameManager.playSound(SOUNDS.MAIN_MENU, true);
+
         setContentView(R.layout.game_main_menu);
         findViews();
+        setupClickEvents();
+    }
 
-        game_btn_submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rows = Integer.parseInt(game_et_rows.getText().toString());
-                cols = Integer.parseInt(game_et_cols.getText().toString());
+    private void setupClickEvents()
+    {
+        // start button to switch to game screen
+        game_btn_submit.setOnClickListener(view -> {
+            // switch to game screen and init values
+            gameManager.playSound(SOUNDS.MAIN_MENU, false);
 
-                setContentView(R.layout.activity_game);
-                init(true);
-            }
+            setContentView(R.layout.activity_game);
+            init(true);
+        });
+
+        game_btn_submit_sensors.setOnClickListener(view -> {
+            // init sensors, then switch to game screen and init values
+            sensorsManger = new SensorsManager();
+            sensorsManger.init();
+
+            game_btn_submit.callOnClick();
+        });
+
+        game_btn_records.setOnClickListener(view -> {
+            game_tv_records_label.setVisibility(View.VISIBLE);
+            game_tv_records.setVisibility(View.VISIBLE);
+            game_btn_back.setVisibility(View.VISIBLE);
+            game_tv_title.setVisibility(View.GONE);
+            game_btn_submit.setVisibility(View.GONE);
+            game_btn_submit_sensors.setVisibility(View.GONE);
+            game_btn_records.setVisibility(View.GONE);
+
+            String recordsKey = "com.my.app.records";
+            String recordsString = prefs.getString(recordsKey, "");
+
+            game_tv_records.setText(recordsString);
+
+            game_btn_back.setOnClickListener(view2 -> {
+                game_tv_records_label.setVisibility(View.GONE);
+                game_tv_records.setVisibility(View.GONE);
+                game_btn_back.setVisibility(View.GONE);
+                game_tv_title.setVisibility(View.VISIBLE);
+                game_btn_submit.setVisibility(View.VISIBLE);
+                game_btn_submit_sensors.setVisibility(View.VISIBLE);
+                game_btn_records.setVisibility(View.VISIBLE);
+            });
         });
     }
 
+    // initializes the board on game start, or restarts the position of characters on a new round
     private void init(boolean firstTime) {
         if (firstTime) {
             findViews();
-            createMatrix();
-            setupMovementButtons();
-            gameManager = new GameManager();
-            moveDir = new Point();
 
-            handler.postDelayed(new Runnable() {
+            game_btn_exit.setOnClickListener(view -> {
+                gameManager.playSound(SOUNDS.VICTORY, false);
+                finish();
+            });
+
+            setupMovementButtons();
+            createMatrix();
+            gameBoard = new GameBoard(game_LL_mainMatrix);
+
+            // timer to check when to hide the text and start the movement
+            HelperMethods.TIMER.postDelayed(new Runnable() {
                 public void run() {
 
-                    if (timeUntilStart != 1) {                        timeUntilStart--;
+                    if (timeUntilStart != 1) {
+                        timeUntilStart--;
                         game_tv_timer.setText(getString(R.string.tv_go) + "\n" + timeUntilStart);
                         game_tv_timer.setVisibility(View.VISIBLE);
                     } else {
+                        if (!gameManager.getSound(SOUNDS.BATTLE).isPlaying())
+                            gameManager.playSound(SOUNDS.BATTLE, true);
+
                         game_tv_timer.setVisibility(View.INVISIBLE);
                         updateUnitLoc();
                     }
 
+                    // keep timer running on delay as long as enemy isn't dead
                     if (!gameManager.isDead())
-                        handler.postDelayed(this, delay);
+                        HelperMethods.TIMER.postDelayed(this, HelperMethods.DELAY);
                 }
-            }, delay);
+            }, HelperMethods.DELAY);
         }
 
         updateUI();
-        charLocation = new Point(rand.nextInt(cols), 0);
-        enemyLocation = new Point(rand.nextInt(cols), rows - 1);
 
-        setImageResource(getImageFromLoc(charLocation), R.drawable.iv_hunter);
-        setImageResource(getImageFromLoc(enemyLocation), R.drawable.iv_dino);
+        // remove existing meat before round reset
+        gameBoard.getImageFromLoc(gameBoard.getMeatLocation()).setImageResource(0);
+
+        gameBoard.setCharLocation(HelperMethods.RANDOM.nextInt(HelperMethods.COLS), 0);
+        gameBoard.setEnemyLocation(HelperMethods.RANDOM.nextInt(HelperMethods.COLS), HelperMethods.ROWS - 1);
+        gameBoard.initMeat();
+
+        gameBoard.getImageFromLoc(gameBoard.getCharLocation()).setImageResource(R.drawable.iv_hunter);
+        gameBoard.getImageFromLoc(gameBoard.getEnemyLocation()).setImageResource(R.drawable.iv_dino);
+        gameBoard.getImageFromLoc(gameBoard.getMeatLocation()).setImageResource(R.drawable.iv_meat);
     }
 
+    // only show button content of the default move direction
+    // disable buttons if sensor gameplay is enabled
     private void setupMovementButtons() {
-        game_btn_left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveDir.set(-1, 0);
-                game_btn_left.setTextScaleX(1);
+        if (sensorsManger != null) {
+            game_btn_left.setEnabled(false);
+            game_btn_right.setEnabled(false);
+            game_btn_up.setEnabled(false);
+            game_btn_down.setEnabled(false);
+        }
 
-                game_btn_right.setTextScaleX(0);
-                game_btn_up.setTextScaleX(0);
-                game_btn_down.setTextScaleX(0);
-                ;
-            }
-        });
+        game_btn_left.setOnClickListener(view -> changeMoveDirection(DIRECTION.LEFT));
 
-        game_btn_right.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveDir.set(1, 0);
-                game_btn_right.setTextScaleX(1);
+        game_btn_right.setOnClickListener(view -> changeMoveDirection(DIRECTION.RIGHT));
 
-                game_btn_left.setTextScaleX(0);
-                game_btn_up.setTextScaleX(0);
-                game_btn_down.setTextScaleX(0);
-            }
-        });
+        game_btn_up.setOnClickListener(view -> changeMoveDirection(DIRECTION.UP));
 
-        game_btn_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveDir.set(0, -1);
-                game_btn_up.setTextScaleX(1);
-
-                game_btn_right.setTextScaleX(0);
-                game_btn_left.setTextScaleX(0);
-                game_btn_down.setTextScaleX(0);
-            }
-        });
-
-        game_btn_down.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveDir.set(0, 1);
-                game_btn_down.setTextScaleX(1);
-
-                game_btn_right.setTextScaleX(0);
-                game_btn_up.setTextScaleX(0);
-                game_btn_left.setTextScaleX(0);
-            }
-        });
+        game_btn_down.setOnClickListener(view -> changeMoveDirection(DIRECTION.DOWN));
     }
 
-    private void setImageResource(ImageView img, int resource) {
-        img.setImageResource(resource);
-    }
-
-    private ImageView getImageFromLoc(Point loc) {
-        return (ImageView) ((LinearLayout) game_LL_mainMatrix.getChildAt(loc.y)).getChildAt(loc.x);
-    }
-
+    // handle movement of player and enemy
     private void updateUnitLoc() {
-        int score = Integer.parseInt(game_LBL_score.getText().toString());
-        score++;
-        game_LBL_score.setText(score + "");
+        // increase time by one
+        game_LBL_score.setText(gameManager.addToScore(1) + "");
 
-        setImageResource(getImageFromLoc(charLocation), 0);
-        setImageResource(getImageFromLoc(enemyLocation), 0);
-
-        Point temp = new Point(moveDir);
-        Point oldCharLocation = new Point(charLocation);
-        Point oldEnemyLocation = new Point(enemyLocation);
-
-        charLocation.offset(temp.x, temp.y);
-
-        if (charLocation.x < 0)
-            charLocation.x = cols - 1;
-        else if (charLocation.x >= cols)
-            charLocation.x = 0;
-
-        if (charLocation.y < 0)
-            charLocation.y = rows - 1;
-        else if (charLocation.y >= rows)
-            charLocation.y = 0;
-
-        int randomX = rand.nextInt(3) - 1;
-        int randomY = rand.nextInt(3) - 1;
-
-        enemyLocation.offset(randomX, randomY);
-
-        if (enemyLocation.x < 0)
-            enemyLocation.x = 1;
-        else if (enemyLocation.x >= cols)
-            enemyLocation.x = cols - 1;
-
-        if (enemyLocation.y < 0)
-            enemyLocation.y = 1;
-        else if (enemyLocation.y >= rows)
-            enemyLocation.y = rows - 1;
-
-        if (charLocation.equals(enemyLocation) || (oldCharLocation.equals(enemyLocation) && oldEnemyLocation.equals(charLocation))) {
+        // if there was a collision
+        if (gameBoard.moveCharacters()) {
+            // reduce enemy life
             gameManager.reduceLives();
 
+            // check if enemy is dead and finish game
             if (gameManager.isDead()) {
                 finishGame();
-                return;
             } else {
-                while (enemyLocation.equals(charLocation))
-                    enemyLocation.set(rand.nextInt(cols), rand.nextInt(rows));
+                // randomize enemy location for next round
+                while (gameBoard.getEnemyLocation().equals(gameBoard.getCharLocation()))
+                    gameBoard.getEnemyLocation().set(HelperMethods.RANDOM.nextInt(HelperMethods.COLS), HelperMethods.RANDOM.nextInt(HelperMethods.ROWS));
 
+                // reset round timer and call init to reset positions
                 timeUntilStart = 4;
 
                 init(false);
             }
-        } else {
-            setImageResource(getImageFromLoc(charLocation), R.drawable.iv_hunter);
-            setImageResource(getImageFromLoc(enemyLocation), R.drawable.iv_dino);
+        }
 
-            if (temp.x < 0)
-                getImageFromLoc(charLocation).setScaleX(-1f);
-            else
-                getImageFromLoc(charLocation).setScaleX(1f);
-
-            if (randomX < 0)
-                getImageFromLoc(enemyLocation).setScaleX(-1f);
-            else
-                getImageFromLoc(enemyLocation).setScaleX(1f);
+        // if player collected meat
+        if (gameBoard.checkMeat()) {
+            game_LBL_score.setText(gameManager.addToScore(HelperMethods.MEAT_VALUE) + "");
+            gameManager.playSound(SOUNDS.MEAT, true);
         }
     }
 
-    private void checkBounds(Point loc) {
-        if (loc.x < 0)
-            loc.x = cols - 1;
-        else if (loc.x >= cols)
-            loc.x = 0;
-
-        if (loc.y < 0)
-            loc.y = rows - 1;
-        else if (loc.y >= rows)
-            loc.y = 0;
+    // updates lives in UI
+    private void updateUI() {
+        for (int i = 0; i < game_IMG_hearts.length; i++) {
+            game_IMG_hearts[i].setVisibility(gameManager.getLives() > i ? View.VISIBLE : View.INVISIBLE);
+        }
     }
 
-    private void createMatrix() {
+    // stop timer, show toast with score and end app
+    private void finishGame() {
+        HelperMethods.TIMER.removeCallbacksAndMessages(null);
+        game_tv_timer.setText(getString(R.string.toast_you_win));
+        game_tv_timer.setVisibility(View.VISIBLE);
+        Toast.makeText(this, gameManager.getScore() + " seconds!", Toast.LENGTH_LONG).show();
+//        finish();
+        gameManager.playSound(SOUNDS.BATTLE, false);
+        gameManager.playSound(SOUNDS.VICTORY, true);
+        game_LL_mainMatrix.setVisibility(View.GONE);
+        game_btn_exit.setVisibility(View.VISIBLE);
+
+        String recordsKey = "com.my.app.records";
+        String recordsString = prefs.getString(recordsKey, "");
+
+        Calendar cal = Calendar.getInstance();
+
+        String month = String.format("%02d", cal.get(Calendar.MONTH));
+        String day = String.format("%02d", cal.get(Calendar.DAY_OF_MONTH));
+        String year = String.format("%02d", cal.get(Calendar.YEAR));
+
+        recordsString += "\n" + day + ":" + month + ":" + year + " " + gameManager.getScore();
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(recordsKey, recordsString);
+        editor.apply();
+    }
+
+    // dynamically create rows and cols of the game board
+    public void createMatrix() {
         LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
 
         LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(0, 100);
         imageViewParams.weight = 1;
 
-        for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
+        for (int rowIndex = 0; rowIndex < HelperMethods.ROWS; rowIndex++) {
             LinearLayout layout = new LinearLayout(this);
             layout.setLayoutParams(linearLayoutParams);
             layout.setOrientation(LinearLayout.HORIZONTAL);
             layout.setPadding(15, 15, 15, 15);
 
-
-            for (int colIndex = 0; colIndex < cols; colIndex++) {
+            for (int colIndex = 0; colIndex < HelperMethods.COLS; colIndex++) {
                 ImageView iv = new ImageView(this);
                 iv.setLayoutParams(imageViewParams);
-//                iv.setImageResource(R.drawable.flag_au);
                 iv.setBackgroundResource(R.drawable.iv_shape);
 
                 layout.addView(iv);
@@ -264,18 +278,7 @@ public class Activity_Game extends AppCompatActivity {
         }
     }
 
-    private void updateUI() {
-        for (int i = 0; i < game_IMG_hearts.length; i++) {
-            game_IMG_hearts[i].setVisibility(gameManager.getLives() > i ? View.VISIBLE : View.INVISIBLE);
-        }
-    }
-
-    private void finishGame() {
-        handler.removeCallbacksAndMessages(null);
-        Toast.makeText(this, game_LBL_score.getText() + " seconds!", Toast.LENGTH_LONG).show();
-        finish();
-    }
-
+    // gets references to all the UI objects
     private void findViews() {
         game_IMG_hearts = new ImageView[]{
                 findViewById(R.id.game_IMG_heart1),
@@ -285,9 +288,6 @@ public class Activity_Game extends AppCompatActivity {
 
         game_LL_mainMatrix = findViewById(R.id.game_LL_mainMatrix);
 
-        game_btn_submit = findViewById(R.id.game_btn_submit);
-        game_et_cols = findViewById(R.id.game_et_cols);
-        game_et_rows = findViewById(R.id.game_et_rows);
 
         game_btn_left = findViewById(R.id.game_btn_left);
         game_btn_right = findViewById(R.id.game_btn_right);
@@ -295,5 +295,51 @@ public class Activity_Game extends AppCompatActivity {
         game_btn_down = findViewById(R.id.game_btn_down);
         game_tv_timer = findViewById(R.id.game_tv_timer);
         game_LBL_score = findViewById(R.id.game_LBL_score);
+        game_btn_exit = findViewById(R.id.game_btn_exit);
+        game_tv_records_label = findViewById(R.id.game_tv_records_label);
+
+        game_btn_submit = findViewById(R.id.game_btn_submit);
+        game_btn_submit_sensors = findViewById(R.id.game_btn_submit_sensors);
+        game_btn_records = findViewById(R.id.game_btn_records);
+        game_btn_back = findViewById(R.id.game_btn_back);
+        game_tv_records = findViewById(R.id.game_tv_records);
+        game_tv_title = findViewById(R.id.game_tv_title);
+    }
+
+    public void changeMoveDirection(DIRECTION dir) {
+        switch (dir) {
+            case UP:
+                gameBoard.setMoveDir(0, -1);
+                game_btn_up.setTextScaleX(1);
+
+                game_btn_right.setTextScaleX(0);
+                game_btn_left.setTextScaleX(0);
+                game_btn_down.setTextScaleX(0);
+                break;
+            case DOWN:
+                gameBoard.setMoveDir(0, 1);
+                game_btn_down.setTextScaleX(1);
+
+                game_btn_right.setTextScaleX(0);
+                game_btn_up.setTextScaleX(0);
+                game_btn_left.setTextScaleX(0);
+                break;
+            case LEFT:
+                gameBoard.setMoveDir(-1, 0);
+                game_btn_left.setTextScaleX(1);
+
+                game_btn_right.setTextScaleX(0);
+                game_btn_up.setTextScaleX(0);
+                game_btn_down.setTextScaleX(0);
+                break;
+            case RIGHT:
+                gameBoard.setMoveDir(1, 0);
+                game_btn_right.setTextScaleX(1);
+
+                game_btn_left.setTextScaleX(0);
+                game_btn_up.setTextScaleX(0);
+                game_btn_down.setTextScaleX(0);
+                break;
+        }
     }
 }

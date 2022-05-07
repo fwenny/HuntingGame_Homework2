@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.guy.class22b_and_1">
+    package="com.guy.class22b_and_1" >
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/hunter"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/hunter"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Class22BAnd1">
+        android:theme="@style/Theme.Class22BAnd1" >
         <activity
             android:name=".Activity_Game"
+            android:exported="true"
             android:label="hunting game"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

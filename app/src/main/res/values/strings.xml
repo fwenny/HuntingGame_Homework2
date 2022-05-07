@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Hunting game</string>
     <string name="btn_start">Start!</string>
+    <string name="btn_records">Records</string>
     <string name="tv_num_of_rows">Number of rows:</string>
     <string name="tv_num_of_cols">Number of columns:</string>
     <string name="tv_go">Hunt the dino!</string>
     <string name="toast_you_win">You win!</string>
+    <string name="btn_start_sensors">Start! (sensors)</string>
+    <string name="btn_exit">Exit</string>
+    <string name="btn_back">Back</string>
 </resources>

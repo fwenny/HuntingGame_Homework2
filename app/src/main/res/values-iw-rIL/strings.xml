@@ -6,4 +6,8 @@
     <string name="tv_num_of_cols">מספר עמודות:</string>
     <string name="tv_go">תצוד את הדינו!</string>
     <string name="toast_you_win">ניצחת!</string>
+    <string name="btn_records">שיאים</string>
+    <string name="btn_start_sensors">התחל! (סנסורים)</string>
+    <string name="btn_exit">צא</string>
+    <string name="btn_back">חזור</string>
 </resources>
