@@ -149,9 +149,8 @@ public class Activity_Game extends AppCompatActivity {
                         HelperMethods.TIMER.postDelayed(this, HelperMethods.DELAY);
                 }
             }, HelperMethods.DELAY);
+            updateUI();
         }
-
-        updateUI();
 
         // remove existing meat before round reset
         gameBoard.getImageFromLoc(gameBoard.getMeatLocation()).setImageResource(0);
@@ -193,6 +192,7 @@ public class Activity_Game extends AppCompatActivity {
         if (gameBoard.moveCharacters()) {
             // reduce enemy life
             gameManager.reduceLives();
+            updateUI();
 
             // check if enemy is dead and finish game
             if (gameManager.isDead()) {

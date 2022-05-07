@@ -13,7 +13,7 @@ enum SOUNDS {
 public class GameManager {
 
     private int score = 0;
-    private int lives = 1;
+    private int lives = 3;
     private MediaPlayer meat;
     private MediaPlayer mainMenu;
     private MediaPlayer battle;
