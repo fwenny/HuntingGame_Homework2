@@ -54,17 +54,8 @@ public class GameBoard {
         return this;
     }
 
-    public Point getMoveDir() {
-        return moveDir;
-    }
-
     public GameBoard setMoveDir(int x, int y) {
         this.moveDir.set(x, y);
-        return this;
-    }
-
-    public GameBoard setMoveDir(Point point) {
-        this.moveDir.set(point.x, point.y);
         return this;
     }
 
@@ -150,10 +141,12 @@ public class GameBoard {
         return false;
     }
 
+    // gets image from location
     public ImageView getImageFromLoc(Point loc) {
         return (ImageView) ((LinearLayout) mainMatrix.getChildAt(loc.y)).getChildAt(loc.x);
     }
 
+    // initializes location of meat so it doesnt spawn on top of player / enemy
     public void initMeat() {
         setMeatLocation(HelperMethods.RANDOM.nextInt(HelperMethods.COLS), HelperMethods.RANDOM.nextInt(HelperMethods.ROWS));
 

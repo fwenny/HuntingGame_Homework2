@@ -37,6 +37,7 @@ public class GameManager {
         hit.setVolume(0.5F, 0.5F);
     }
 
+    // gets the sound depending on the enum
     public MediaPlayer getSound(SOUNDS sound) {
         switch (sound) {
             case MEAT:
@@ -54,6 +55,7 @@ public class GameManager {
         return null;
     }
 
+    // plays sound depending on the enum
     public void playSound(SOUNDS sound, boolean isStart) {
         switch (sound) {
             case MEAT:

@@ -14,6 +14,7 @@ public class SensorsManager implements SensorEventListener {
 
     }
 
+    // checks sensor data and changes direction based on orientation
     public void getMovementDir() {
         if (values != null && values.length == 3) {
             float y = values[1];

@@ -70,8 +70,7 @@ public class Activity_Game extends AppCompatActivity {
         setupClickEvents();
     }
 
-    private void setupClickEvents()
-    {
+    private void setupClickEvents() {
         // start button to switch to game screen
         game_btn_submit.setOnClickListener(view -> {
             // switch to game screen and init values
@@ -306,6 +305,7 @@ public class Activity_Game extends AppCompatActivity {
         game_tv_title = findViewById(R.id.game_tv_title);
     }
 
+    // puts dot on the active button and sets move direction depending on the enum
     public void changeMoveDirection(DIRECTION dir) {
         switch (dir) {
             case UP:
